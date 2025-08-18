@@ -3,8 +3,29 @@ import { questions } from "../data/questions";
 
 const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const question = questions[currentQuestion];
+
+  // Handle user selecting an option
+  const handleOptionClick = (option) => {
+    setSelectedOption(option);
+
+    if (option === question.answer) {
+      setScore(score + 1);
+    }
+
+    // Move to next question after short delay
+    setTimeout(() => {
+      setSelectedOption(null);
+      if (currentQuestion + 1 < questions.length) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        alert(`Quiz Finished! ✅ Your score: ${score + (option === question.answer ? 1 : 0)} / ${questions.length}`);
+      }
+    }, 800);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -18,11 +39,23 @@ const Quiz = () => {
           {question.options.map((option, index) => (
             <button
               key={index}
-              className="py-2 px-4 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+              onClick={() => handleOptionClick(option)}
+              className={`py-2 px-4 rounded transition 
+                ${
+                  selectedOption === option
+                    ? option === question.answer
+                      ? "bg-green-500 text-white"
+                      : "bg-red-500 text-white"
+                    : "bg-blue-500 text-white hover:bg-blue-600"
+                }`}
             >
               {option}
             </button>
           ))}
+        </div>
+
+        <div className="mt-6 text-gray-700">
+          Score: {score}
         </div>
       </div>
     </div>
